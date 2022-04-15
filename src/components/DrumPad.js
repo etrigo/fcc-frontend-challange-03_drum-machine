@@ -1,10 +1,8 @@
 import React from 'react'
 
 const DrumPad = ({ click, sound }) => {
-  
   return (
     <div
-      // key={sound.id}
       onClick={event => click(sound.text)}
       className='drum-pad'
       id={sound.name}

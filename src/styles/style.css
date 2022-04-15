@@ -52,7 +52,7 @@ body {
   color: #fcf6bd;
   margin: 5px;
   cursor: pointer;
-  font: 900 bold;
+  font-weight: 900;
   font-size: 30px;
   text-transform: uppercase;
 }
