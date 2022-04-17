@@ -74,6 +74,18 @@ const App = () => {
     <div id='drum-machine'>
       <div id='display'>{display}</div>
       <div id='drum-pads-container'>{drumPads}</div>
+      <div id='credentials-box'>
+        <p>
+          Concept bv{' '}
+          <a href='https://freecodeCamp.com/' target='_blank'>
+            FCC
+          </a>{' '}
+          | Build by{' '}
+          <a href='https://github.com/etrigo/' target='_blank'>
+            Etrigo
+          </a>
+        </p>
+      </div>
     </div>
   )
 }
