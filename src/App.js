@@ -1,71 +1,73 @@
 import React, { useState, useEffect } from 'react'
-import useKeypress from 'react-use-keypress'
 import { nanoid } from 'nanoid'
 import './styles/style.css'
 import DrumPad from './components/DrumPad'
 import { drums, smoothPiano } from './utilities/audio'
 
 const App = () => {
-  // const keys = ['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']
   const keys = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C']
-
-
-  // set up states for "units" with audio etc. and display
-  const [units, setUnits] = useState(keys)
-  const [display, setDisplay] = useState('Start playing around!')
-
+  
 
   // for future instrument switch, but for now no switch implemented
-  const [soundSwitch, setSoundSwitch] = useState(true)
+  const [soundSwitch, setSoundSwitch] = useState(false)
+
+  // set up states for "units" with audio etc. and display
+  const [units, setUnits] = useState(keys.map((key, index) => {
+    const audio = soundSwitch ? drums : smoothPiano
+    return {
+      text: key,
+      audio: audio[index].audio,
+      name: audio[index].name
+    }
+  }))
+  
+  const [display, setDisplay] = useState('Start playing around!')
 
 
   // prepare objects array for units state. Function put inside
   // useEffect for future implementation of instreument switch
   // and prevent infinite loop
-  useEffect(() => {
-    const audio = soundSwitch ? drums : smoothPiano
-    setUnits(prev =>
-      prev.map((key, index) => {
-        return {
-          text: key,
-          audio: audio[index].audio,
-          name: audio[index].name
-        }
-      })
-    )
-  }, [soundSwitch])
-  // console.log(units)
+  // useEffect(() => {
+  //   const audio = soundSwitch ? drums : smoothPiano
+  //   setUnits(prev =>
+  //     prev.map((key, index) => {
+  //       return {
+  //         text: key,
+  //         audio: audio[index].audio,
+  //         name: audio[index].name
+  //       }
+  //     })
+  //   )
+  // }, [soundSwitch])
 
 
-  // function to play audio from click or keypress and also set display state
-  function playAudio (targetKey) {
-    // console.log(targetKey)
+  function handle(event) {
     units.map(unit => {
-      if (unit.text === targetKey) {
-        // console.log(unit)
-        const a = new Audio(unit.audio)
-        a.play()
-        setDisplay(unit.name)
+      if (event.key === unit.text || event.key.toUpperCase() === unit.text) {
+        document.getElementById("display").innerText = unit.name
+        document.getElementById(unit.name).querySelector("audio").play()
       }
     })
   }
 
 
+  // add listener for keyboard events
+  useEffect(() => {
+    window.addEventListener("keydown", event => handle(event))
+    return () => window.removeEventListener("keydown", event => handle(event))
+  }, [])
+
+
+  function handlePlay(event, name) {
+    document.getElementById("display").innerText = name
+    event.target.querySelector('audio').play()
+  }
+
+
   // create array with drumpads to render
   const drumPads = units.map(unit => (
-    <DrumPad key={nanoid()} click={playAudio} sound={unit} />
+    <DrumPad key={nanoid()} click={handlePlay} sound={unit} />
   ))
-
-
-  // listen to keypress to play audio
-  // react-use-keypress dependencie: https://www.npmjs.com/package/react-use-keypress
-  useKeypress(
-    keys.map(key => key.toLowerCase()),
-    event => {
-      // console.log(event.key)
-      playAudio(event.key.toUpperCase())
-    }
-  )
 
 
   return (
